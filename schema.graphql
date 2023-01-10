@@ -5,6 +5,7 @@
 type Mutation {
   deleteUser(id: Int!): User
   signupUser(data: UserCreateInput!): User!
+  updateUser(data: UserUpdateInput!): User
 }
 
 type Query {
@@ -14,10 +15,16 @@ type Query {
 type User {
   age: Int!
   id: Int!
+  movie: String
   name: String!
 }
 
 input UserCreateInput {
   age: Int!
   name: String!
+}
+
+input UserUpdateInput {
+  id: Int!
+  movie: String!
 }

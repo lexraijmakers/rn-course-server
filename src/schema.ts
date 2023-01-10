@@ -1,4 +1,4 @@
-import { intArg, makeSchema, nonNull, objectType, inputObjectType, arg } from 'nexus'
+import { intArg, makeSchema, nonNull, objectType, inputObjectType, arg, stringArg } from 'nexus'
 import { Context } from './context'
 
 const Query = objectType({
@@ -35,6 +35,25 @@ const Mutation = objectType({
             }
         })
 
+        t.field('updateUser', {
+            type: 'User',
+            args: {
+                data: nonNull(
+                    arg({
+                        type: 'UserUpdateInput'
+                    })
+                )
+            },
+            resolve: async (_, args, context: Context) => {
+                return context.prisma.user.update({
+                    where: { id: args.data.id },
+                    data: {
+                        movie: args.data.movie
+                    }
+                })
+            }
+        })
+
         t.field('deleteUser', {
             type: 'User',
             args: {
@@ -55,6 +74,7 @@ const User = objectType({
         t.nonNull.int('id')
         t.nonNull.string('name')
         t.nonNull.int('age')
+        t.string('movie')
     }
 })
 
@@ -66,8 +86,16 @@ const UserCreateInput = inputObjectType({
     }
 })
 
+const UserUpdateInput = inputObjectType({
+    name: 'UserUpdateInput',
+    definition(t) {
+        t.nonNull.int('id')
+        t.nonNull.string('movie')
+    }
+})
+
 export const schema = makeSchema({
-    types: [Query, Mutation, User, UserCreateInput],
+    types: [Query, Mutation, User, UserCreateInput, UserUpdateInput],
     outputs: {
         schema: __dirname + '/../schema.graphql',
         typegen: __dirname + '/generated/nexus.ts'
